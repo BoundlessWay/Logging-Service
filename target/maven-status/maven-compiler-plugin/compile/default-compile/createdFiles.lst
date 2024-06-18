@@ -1,0 +1,4 @@
+com\example\logging\Main.class
+com\example\logging\Logger.class
+com\example\logging\Consumer.class
+com\example\logging\CustomTrustManager.class
