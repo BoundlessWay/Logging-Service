@@ -4,7 +4,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
-import javax.net.ssl.SSLSocketFactory;
 
 public class Consumer {
 
@@ -14,9 +13,6 @@ public class Consumer {
         ConnectionFactory factory = new ConnectionFactory();
 
         factory.setUri("amqps://krgczsus:lZvR3IMF41W6uOaqofB4BnCWfALEr6mf@shrimp.rmq.cloudamqp.com/krgczsus");
-        
-        SSLSocketFactory sslSocketFactory = CustomTrustManager.createSSLSocketFactory();
-        factory.setSocketFactory(sslSocketFactory);
         
         Connection connection = null;
         
