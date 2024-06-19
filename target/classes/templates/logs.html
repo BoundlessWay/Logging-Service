@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logs</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h1>User logs</h1>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+    <div th:each="log : ${logs}" class="log-entry">
+        <ul>
+            <li th:each="entry : ${log.entrySet()}"
+                th:text="${entry.key + ': ' + entry.value}"></li>
+        </ul>
+    </div>
+</body>
+</html>
