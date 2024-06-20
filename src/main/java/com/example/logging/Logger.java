@@ -10,16 +10,9 @@ import com.mongodb.MongoException;
 import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
 
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +22,6 @@ public class Logger {
     @Value("${mongodb.uri}")
     private String connectionString;
     
-    @Autowired
-    private Producer producer;
-
     @SuppressWarnings("unchecked")
     public void logToMongoDB(String logMessage)  {
         ServerApi serverApi = ServerApi.builder()

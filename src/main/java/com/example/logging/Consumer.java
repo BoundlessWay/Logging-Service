@@ -67,6 +67,7 @@ public class Consumer {
         
         String typeLogging = "system";
         String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(Instant.now());
+        System.out.println(timestamp);
         String logger = this.getClass().getSimpleName();
         String level = "Error";
         String path = "Logging-Service#Consumer.java#receiveMessagesFromRabbitMQ()";
