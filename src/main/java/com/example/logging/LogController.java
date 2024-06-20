@@ -22,7 +22,7 @@ public class LogController {
     private String connectionString;
 
     @GetMapping("/user")
-    public String getLogs(Model model) {
+    public String getUserLogs(Model model) {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase database = mongoClient.getDatabase("event-ticket");
             MongoCollection<Document> collection = database.getCollection("user-logging");
@@ -43,4 +43,28 @@ public class LogController {
 
         return "logs"; 
     }
+    
+    @GetMapping("/system")
+    public String getSystemLogs(Model model) {
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("event-ticket");
+            MongoCollection<Document> collection = database.getCollection("sys-logging");
+
+            MongoCursor<Document> cursor = collection.find().iterator();
+            List<Map<String, Object>> logs = new ArrayList<>();
+            
+            while (cursor.hasNext()) {
+            	Document doc = cursor.next();
+                logs.add(doc);
+            }
+
+            model.addAttribute("logs", logs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("logs", "Error retrieving logs from database");
+        }
+
+        return "logs"; 
+    }
+    
 }

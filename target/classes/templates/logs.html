@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
-    <h1>User logs</h1>
+    <h1>logs</h1>
     <div th:if="${error}" class="error" th:text="${error}"></div>
     <div th:each="log : ${logs}" class="log-entry">
         <ul>

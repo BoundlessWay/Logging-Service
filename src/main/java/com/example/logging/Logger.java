@@ -4,14 +4,22 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.MongoException;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
 import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
+
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +28,12 @@ public class Logger {
 
     @Value("${mongodb.uri}")
     private String connectionString;
+    
+    @Autowired
+    private Producer producer;
 
     @SuppressWarnings("unchecked")
-    public void logToMongoDB(String logMessage) {
+    public void logToMongoDB(String logMessage)  {
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
                 .build();
@@ -33,6 +44,8 @@ public class Logger {
                 .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
+
+        	
         	MongoDatabase database = mongoClient.getDatabase("event-ticket");
             JSONObject jsonMessage = (JSONObject) JSONValue.parse(logMessage);
             MongoCollection<Document> collection = database.getCollection("user-logging");
@@ -43,9 +56,9 @@ public class Logger {
                 jsonMessage.put("content", logMessage);
             } else {
                 jsonMessage.put("Json-string", "valid");
-                String typeLogging = (String) jsonMessage.get("type-logging");
+                String type = (String) jsonMessage.get("type-logging");
 
-                if (typeLogging != null && typeLogging.equals("system")) {
+                if (type != null && type.equals("system")) {
                     collection = database.getCollection("sys-logging");
                 } else {
                     collection = database.getCollection("user-logging");
@@ -60,4 +73,6 @@ public class Logger {
             e.printStackTrace();
         }
     }
+    
+    
 }
