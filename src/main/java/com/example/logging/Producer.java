@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,9 +18,12 @@ public class Producer {
 
     private final static String QUEUE_NAME = "logs";
 
-    @Value("${rabbitmq.uri}")
-    private String rabbitMqUri;
+    private final String rabbitMqUri = "amqps://krgczsus:lZvR3IMF41W6uOaqofB4BnCWfALEr6mf@shrimp.rmq.cloudamqp.com/krgczsus";
 
+    public Producer() {
+        
+    }
+    
     @SuppressWarnings("unchecked")
 	public void sendMessageToRabbitMQ(String typeLogging, String timestamp, String logger, String level, String path, String content) throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
         try {

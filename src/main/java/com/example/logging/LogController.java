@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +17,7 @@ import java.util.Map;
 @Controller
 public class LogController {
 
-    @Value("${mongodb.uri}")
-    private String connectionString;
+	private final String connectionString = "mongodb+srv://voducloi236:BzawYXJnTbzilFmS@cluster0.ghohcz9.mongodb.net/event-ticket?retryWrites=true&w=majority&appName=Cluster0";
 
     @GetMapping("/user")
     public String getUserLogs(Model model) {

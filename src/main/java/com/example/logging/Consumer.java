@@ -5,8 +5,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,6 +12,7 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeoutException;
 
@@ -23,27 +22,28 @@ public class Consumer {
 
     private final static String QUEUE_NAME = "logs";
 
-    @Value("${rabbitmq.uri}")
-    private String rabbitMqUri;
+    private final String rabbitMqUri = "amqps://krgczsus:lZvR3IMF41W6uOaqofB4BnCWfALEr6mf@shrimp.rmq.cloudamqp.com/krgczsus";
     
-    @Autowired
-    private Logger mongoDBLogger;
+    private static Logger mongoDBLogger = new Logger();
     
-    @Autowired
-    private Producer producer;
+    private static Producer producer = new Producer();
+    
+    public Consumer() {
+    	
+    }
 
-    public void receiveMessagesFromRabbitMQ() throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
+    public void receiveMessagesFromRabbitMQ()  {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(rabbitMqUri);
         
         try {
+        	factory.setUri(rabbitMqUri);
         	Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
             channel.queueDeclare(QUEUE_NAME, true, false, false, null);
             
      
             String typeLogging = "system";
-            String timestamp = Instant.now().toString();
+            String timestamp = Instant.now().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
             String logger = this.getClass().getSimpleName();
             String level = "Info";
             String path = "Logging-Service#Consumer.java#receiveMessagesFromRabbitMQ()";
@@ -63,17 +63,22 @@ public class Consumer {
         }
     }
     
-    private void handleConnectionFailure(Exception e) throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
+    private void handleConnectionFailure(Exception e) {
         
         String typeLogging = "system";
-        String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(Instant.now());
+        String timestamp = Instant.now().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         System.out.println(timestamp);
         String logger = this.getClass().getSimpleName();
         String level = "Error";
         String path = "Logging-Service#Consumer.java#receiveMessagesFromRabbitMQ()";
         String content = "Failed to connect to Rabbit MQ: " + e.getMessage();
         
-        producer.sendMessageToRabbitMQ(typeLogging, timestamp, logger, level, path, content);
+        try {
+			producer.sendMessageToRabbitMQ(typeLogging, timestamp, logger, level, path, content);
+		} catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         
     }
 }

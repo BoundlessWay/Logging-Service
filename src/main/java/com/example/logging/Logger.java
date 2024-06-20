@@ -13,30 +13,50 @@ import com.mongodb.ServerApiVersion;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Logger {
 
-    @Value("${mongodb.uri}")
-    private String connectionString;
+    private final String connectionString = "mongodb+srv://voducloi236:BzawYXJnTbzilFmS@cluster0.ghohcz9.mongodb.net/event-ticket?retryWrites=true&w=majority&appName=Cluster0";
+    
+    private MongoClient mongoClient;
+    private MongoDatabase database;
+    
+    public Logger() {
+        connectToMongoDB();
+    }
+    
+    private void connectToMongoDB() {
+        if (mongoClient == null) {
+            ServerApi serverApi = ServerApi.builder()
+                    .version(ServerApiVersion.V1)
+                    .build();
+
+            MongoClientSettings settings = MongoClientSettings.builder()
+                    .applyConnectionString(new ConnectionString(connectionString))
+                    .serverApi(serverApi)
+                    .build();
+
+            try {
+                mongoClient = MongoClients.create(settings);
+                database = mongoClient.getDatabase("event-ticket");
+                System.out.println("Connected to MongoDB successfully.");
+            } catch (MongoException e) {
+                e.printStackTrace();
+                System.err.println("Failed to connect to MongoDB: " + e.getMessage());
+            }
+        }
+    }
     
     @SuppressWarnings("unchecked")
     public void logToMongoDB(String logMessage)  {
-        ServerApi serverApi = ServerApi.builder()
-                .version(ServerApiVersion.V1)
-                .build();
+    	if (mongoClient == null || database == null) {
+            System.err.println("MongoDB connection is not established.");
+            return;
+        }
 
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(connectionString))
-                .serverApi(serverApi)
-                .build();
-
-        try (MongoClient mongoClient = MongoClients.create(settings)) {
-
-        	
-        	MongoDatabase database = mongoClient.getDatabase("event-ticket");
+        try  {
             JSONObject jsonMessage = (JSONObject) JSONValue.parse(logMessage);
             MongoCollection<Document> collection = database.getCollection("user-logging");
 
